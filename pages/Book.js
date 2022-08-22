@@ -122,6 +122,7 @@ function Book({ route }) {
       <TouchableOpacity onPress={deleteBook} style={styles.addButton}>
         <Text style={styles.buttonText}>Delete Book</Text>
       </TouchableOpacity>
+      <StatusBar style="auto" />
     </SafeAreaView>
   );
 }

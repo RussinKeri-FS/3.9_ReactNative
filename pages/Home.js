@@ -2,7 +2,6 @@ import { StatusBar } from "expo-status-bar";
 import { 
   SafeAreaView, 
   Text, 
-  Button, 
   TouchableOpacity 
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
