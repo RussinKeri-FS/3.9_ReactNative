@@ -1,23 +1,16 @@
+import React from "react";
 import { StatusBar } from "expo-status-bar";
-import { 
-  SafeAreaView, 
-  Text, 
-  TouchableOpacity 
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView, Text, TouchableOpacity } from "react-native";
+
 
 import styles from "../AppStyles";
 
-function Home() {
-  const navigation = useNavigation();
+function Home({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.pageName}>Book Library</Text>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate("Book List")}
-      >
-        <Text style={styles.buttonText}>View Books</Text>
+      <Text style={styles.pageName}>Book List Homepage</Text>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("BookList")}>
+        <Text style={styles.buttonText}>Book List</Text>
       </TouchableOpacity>
       <StatusBar style="auto" />
     </SafeAreaView>

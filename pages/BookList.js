@@ -1,19 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
-import {
-  SafeAreaView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { View, Text, TextInput, TouchableOpacity, SafeAreaView, FlatList } from "react-native";
 
 import styles from "../AppStyles";
-import ListContainer from "../components/ListContainer";
 
-function BookList() {
-  const navigation = useNavigation();
+function BookList({ navigation }) {
+  const [books, setBooks] = useState(null);
   const [loading, setLoading] = useState(false);
   const [values, setValues] = useState({
     name: "",
@@ -28,32 +20,59 @@ function BookList() {
     setValues({ ...values, author: value });
   };
 
-  const saveBook = async () => {
-    setLoading(true);
-    await fetch(
-      `https://crudbookapi.herokuapp.com/api/v1/books`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ values }),
-      }
-    )
-      .then((res) => {
-        setLoading(false), res.json();
-      })
-      .then((data) => console.log(data))
-      .catch((error) => console.log(error));
+  useEffect(() => {
+    getBooks();
+  }, []);
+
+  const getBooks = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`https://crudbookapi.herokuapp.com/api/v1/books`);
+      const json = await response.json();
+      setBooks(json);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const saveBook = () => {
+    setLoading(true);
+    fetch(`https://crudbookapi.herokuapp.com/api/v1/books`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    })
+      .then((response) => {
+        setLoading(false);
+        response.text();
+        console.log(values);
+      })
+      .then(() => getBooks())
+      .catch((error) => console.error(error));
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate("Home")}
-      >
+      <TouchableOpacity style={styles.button} onPress={() => navigation.goBack("Home")}>
         <Text style={styles.buttonText}>Home</Text>
       </TouchableOpacity>
       <Text style={styles.pageName}>Book List</Text>
-      <ListContainer />
+
+      <FlatList
+        data={books}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.book}
+            onPress={() => navigation.navigate("Book", { _id: item._id })}
+          >
+            <Text style={styles.bookTitle}>{item.name}</Text>
+          </TouchableOpacity>
+        )}
+        keyExtractor={(item) => item._id}
+      />
+
       <View style={styles.inputContainer}>
         <TextInput
           placeholder={"Book Title"}
@@ -65,10 +84,10 @@ function BookList() {
           onChangeText={(value) => onChangeAuthor(value)}
           style={styles.input}
         />
+        <TouchableOpacity onPress={saveBook} style={styles.addButton}>
+          <Text style={styles.buttonText}>{loading ? `Waiting` : `Add Book`}</Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={saveBook} style={styles.addButton}>
-        <Text style={styles.buttonText}>Add Book</Text>
-      </TouchableOpacity>
       <StatusBar style="auto" />
     </SafeAreaView>
   );

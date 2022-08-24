@@ -42,7 +42,7 @@ export default function ListContainer() {
       renderItem={({ item }) => (
         <TouchableOpacity
           style={styles.book}
-          onPress={() => navigation.navigate("Book")}
+          onPress={() => navigation.push("Book")}
         >
           <Text style={styles.bookName}>{item.name}</Text>
         </TouchableOpacity>
